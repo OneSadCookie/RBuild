@@ -2,6 +2,8 @@
 
 require 'fileutils'
 
+$: << File.dirname($0)
+
 class BuildFailedError < Exception
 end
 
