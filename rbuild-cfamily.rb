@@ -3,8 +3,8 @@ if RUBY_PLATFORM =~ /darwin/ then
 else
     CFLAGS = '-g -Os -Wall -W -Wno-unused-parameter -Werror'
 end
-CC = 'gcc'
-CXX = 'g++'
+CC = '/usr/bin/gcc'
+CXX = '/usr/bin/g++'
 
 def which_compiler(source_file)
     extension = source_file.split(/\./)[-1]

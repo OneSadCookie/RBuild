@@ -77,6 +77,13 @@ class BuildTarget
         end
     end
     
+    def dump()
+        puts "#{@path} : #{@command} ( #{@dependencies.keys.collect { |dependency| dependency.path }.join(',')} )"
+    end
+    
+    attr_reader :path
+    protected :path
+    
 end
 
 class BuildEnvironment
@@ -114,6 +121,12 @@ class BuildEnvironment
             target.clean()
         end
     end
+    
+    def dump()
+        @targets.each do |product, target|
+            target.dump
+        end
+    end
 
 end
 
@@ -126,6 +139,8 @@ end
 
 build_environment.instance_eval(build_script_text,
                                 File.expand_path('build.rb'))
+
+#build_environment.dump
 
 begin
     if ARGV.include?('clean') then
