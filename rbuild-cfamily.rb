@@ -1,10 +1,10 @@
 CFLAGS = '-g -Os -Wall -W -Wno-unused-parameter -Wnewline-eof -Werror'
-CC = "gcc #{CFLAGS}"
-CXX = "g++ #{CFLAGS}"
+CC = 'gcc'
+CXX = 'g++'
 
 def which_compiler(source_file)
     extension = source_file.split(/\./)[-1]
-    if ['cc', 'C', 'cxx', 'c++', 'cpp'].include?(extension) then
+    if ['cc', 'C', 'cxx', 'c++', 'cpp', 'mm'].include?(extension) then
         CXX
     else
         CC
@@ -30,11 +30,12 @@ def build_objects(parameters)
     sources = parameters[:sources] || return
     source_to_object_name = parameters[:source_to_object_name] ||
         DEFAULT_SOURCE_TO_OBJECT_NAME
+    cflags = parameters[:cflags] || CFLAGS
     extra_cflags = parameters[:extra_cflags] || ''
     extra_dependencies = parameters[:extra_dependencies] || []
     
     sources.collect do |source_file|
-        compiler = "#{which_compiler(source_file)} #{extra_cflags}"
+        compiler = "#{which_compiler(source_file)} #{cflags} #{extra_cflags}"
         object_file = source_to_object_name.call(source_file)
         
         build(:targets => [object_file],
