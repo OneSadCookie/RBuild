@@ -55,9 +55,11 @@ class BuildTarget
         end
             
         puts(@message)
-        if !system(@command) then
+        command_output = `#{@command}`
+        if $? != 0 then
             puts(@command)
-            puts("Exited with status #{$?}")
+            puts(command_output)
+            puts("Exited with status #{$? >> 8}")
             raise(BuildFailedError, "Failed to build #{@path}")
         end
         
@@ -127,6 +129,6 @@ begin
     else
         build_environment.execute()
     end
-#rescue => BuildFailedError
-#    puts("Build Failed: ")
+rescue BuildFailedError => build_error
+    puts("Build Failed: #{build_error}")
 end
