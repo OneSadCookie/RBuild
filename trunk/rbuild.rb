@@ -49,7 +49,7 @@ class BuildTarget
         
         if self.exists? then
             my_time = File.mtime(@path)
-            if my_time > newest_dependency_time then
+            if my_time >= newest_dependency_time then
                 return my_time
             end
         end
