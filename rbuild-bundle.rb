@@ -42,7 +42,10 @@ def build_bundle(parameters)
         raise(BuildFailedError, "Must specify :bundle_name")
     resources_directories = parameters[:resources_directories]
     if resources_directories == nil then
-        resources_directories = [parameters[:resources_directory]]
+        resource_directory =  parameters[:resources_directory]
+        if resource_directory != nil then
+            resources_directories = [resource_directory]
+        end
     end
     application_signature = parameters[:application_signature] || '????'
     info_plist_file = parameters[:info_plist_file]
