@@ -1,3 +1,5 @@
+require 'find'
+
 def info_plist_text(executable_name)
     <<END_OF_INFO_PLIST
 <?xml version="1.0" encoding="UTF-8"?>
@@ -45,10 +47,17 @@ def build_bundle(parameters)
         File.basename(bundle_name, '.app')
     
     if resources_directory != nil then
-        build(:targets => ["#{bundle_name}/Contents/Resources"],
-              :dependencies => [resources_directory],
-              :command => "cp -r '#{resources_directory}' '#{bundle_name}'/Contents/",
-              :message => "Copying Resources")
+        Find.find(resources_directory) do |path|
+            source_path = path.sub(/^#{resources_directory}\//, '')
+            destination_path = "#{bundle_name}/Contents/Resources/#{source_path}"
+            
+            if FileTest.file?(path) then
+                build(:targets => [destination_path],
+                      :dependencies => [path],
+                      :command => "cp '#{path}' '#{destination_path}'",
+                      :message => "Copying Resource #{source_path}")
+            end
+        end
     end
     
     build(:targets => ["#{bundle_name}/Contents/PkgInfo"],
