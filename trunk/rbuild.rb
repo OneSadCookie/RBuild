@@ -31,29 +31,42 @@ class BuildTarget
         return File.exists?(@path)
     end
     
-    def execute()
-        return if self.exists?
-    
+    def execute()    
         if @command == nil then
-            raise(BuildFailedError, "No rule to build #{@path}")
-        end
-    
-        @dependencies.each_key do |dependency|
-            if !dependency.exists? then
-                dependency.execute()
+            if self.exists? then
+                return File.mtime(@path)
+            else
+                raise(BuildFailedError, "No rule to build #{@path}")
             end
         end
     
+        newest_dependency_time = Time.at(0)
+        @dependencies.each_key do |dependency|
+            dependency_time = dependency.execute()
+            newest_dependency_time =
+                dependency_time if dependency_time > newest_dependency_time
+        end
+        
+        if self.exists? then
+            my_time = File.mtime(@path)
+            if my_time > newest_dependency_time then
+                return my_time
+            end
+        end
+            
         puts(@message)
         if !system(@command) then
             puts(@command)
             puts("Exited with status #{$?}")
             raise(BuildFailedError, "Failed to build #{@path}")
         end
+        
+        return newest_dependency_time
     end
     
     def clean()
         if @command != nil && File.exists?(@path) then
+            puts("Removing #{@path}")
             FileUtils::rm_rf(@path)
         end
     end
