@@ -26,6 +26,10 @@ def info_plist_text(executable_name)
 	<string>????</string>
 	<key>CFBundleVersion</key>
 	<string>0.1</string>
+	<key>NSPrincipalClass</key>
+	<string>NSApplication</string>
+	<key>NSMainNibFile</key>
+	<string>MainMenu</string>
 </dict>
 </plist>
 END_OF_INFO_PLIST
