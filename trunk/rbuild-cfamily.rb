@@ -47,9 +47,9 @@ def build_objects(parameters)
     end
 end
 
-def build_link(parameters)
+def build_executable(parameters)
     executable = parameters[:executable] ||
-        raise(BuildFailedError, 'build_link requires an executable name')
+        raise(BuildFailedError, 'build_executable requires an executable name')
     objects = parameters[:objects] || []
     archives = parameters[:archives] || []
     library_search_paths = parameters[:library_search_paths] || []

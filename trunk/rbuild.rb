@@ -56,7 +56,7 @@ class BuildTarget
             end
         end
         
-        system("mkdir -p #{File.dirname(@path)}")
+        system("mkdir -p '#{File.dirname(@path)}'")
         
         puts(@message)
         command_output = `#{@command}`
