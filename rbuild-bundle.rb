@@ -40,27 +40,32 @@ end
 def build_bundle(parameters)
     bundle_name = parameters[:bundle_name] ||
         raise(BuildFailedError, "Must specify :bundle_name")
-    resources_directory = parameters[:resources_directory]
+    resources_directories = parameters[:resources_directories]
+    if resources_directories == nil then
+        resources_directories = [parameters[:resources_directory]]
+    end
     application_signature = parameters[:application_signature] || '????'
     info_plist_file = parameters[:info_plist_file]
     executable_name = parameters[:executable_name] ||
         File.basename(bundle_name, '.app')
     
-    if resources_directory != nil then
-        Find.find(resources_directory) do |path|
-            if File.basename(path) =~ /^\./ then
-                Find.prune
-            end
-        
-            if FileTest.file?(path) then
-                source_path = path.sub(/^#{resources_directory}\//, '')
-                destination_path = "#{bundle_name}/Contents/Resources/#{source_path}"
+    if resources_directories != nil then
+        resources_directories.each do |resources_directory|
+            Find.find(resources_directory) do |path|
+                if File.basename(path) =~ /^\./ then
+                    Find.prune
+                end
             
-            
-                build(:targets => [destination_path],
-                      :dependencies => [path],
-                      :command => "cp '#{path}' '#{destination_path}'",
-                      :message => "Copying Resource #{source_path}")
+                if FileTest.file?(path) then
+                    source_path = path.sub(/^#{resources_directory}\//, '')
+                    destination_path = "#{bundle_name}/Contents/Resources/#{source_path}"
+                
+                
+                    build(:targets => [destination_path],
+                          :dependencies => [path],
+                          :command => "cp '#{path}' '#{destination_path}'",
+                          :message => "Copying Resource #{source_path}")
+                end
             end
         end
     end
