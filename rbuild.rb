@@ -86,6 +86,27 @@ class BuildTarget
     
 end
 
+class AlwaysBuildTarget
+
+    def exists?()
+        true
+    end
+    
+    def execute()
+        Time.now() + (60 * 60 * 24 * 7)
+    end
+    
+    def clean()
+    end
+    
+    def dump()
+        puts "always build"
+    end
+
+end
+
+ALWAYS_BUILD = AlwaysBuildTarget.new
+
 class BuildEnvironment
 
     def initialize()
@@ -104,7 +125,11 @@ class BuildEnvironment
             @targets[target].set_command(command, message)
             
             dependencies.each do |dependency|
-                @targets[dependency] ||= BuildTarget.new(dependency)
+                if dependency.kind_of?(AlwaysBuildTarget) then
+                    @targets[dependency] = dependency
+                else
+                    @targets[dependency] ||= BuildTarget.new(dependency)
+                end
                 @targets[target].add_dependency(@targets[dependency])
             end
         end
