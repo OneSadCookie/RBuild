@@ -54,7 +54,7 @@ def build_bundle(parameters)
     if info_plist_file != nil then
         build(:targets => ["#{bundle_name}/Contents/Info.plist"],
               :dependencies => [info_plist_file],
-              :command => "cp '#{info_plist_file}' '#{bundle_name}/Contents/'",
+              :command => "cp '#{info_plist_file}' '#{bundle_name}/Contents/Info.plist'",
               :message => "Copying Info.plist File #{bundle_name}/Contents/Info.plist")
     else
         build(:targets => ["#{bundle_name}/Contents/Info.plist"],
