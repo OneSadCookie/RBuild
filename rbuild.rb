@@ -150,4 +150,5 @@ begin
     end
 rescue BuildFailedError => build_error
     puts("Build Failed: #{build_error}")
+    exit(1)
 end
