@@ -1,9 +1,44 @@
+def info_plist_text(executable_name)
+    <<END_OF_INFO_PLIST
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>English</string>
+	<key>CFBundleExecutable</key>
+	<string>#{executable_name}</string>
+	<key>CFBundleGetInfoString</key>
+	<string>© 2003 Keith Bauer</string>
+	<key>CFBundleIconFile</key>
+	<string>#{executable_name}.icns</string>
+	<key>CFBundleIdentifier</key>
+	<string></string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>#{executable_name}</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>© 2003 Keith Bauer</string>
+	<key>CFBundleSignature</key>
+	<string>????</string>
+	<key>CFBundleVersion</key>
+	<string>0.1</string>
+</dict>
+</plist>
+END_OF_INFO_PLIST
+end
+
 def build_bundle(parameters)
     bundle_name = parameters[:bundle_name] ||
         raise(BuildFailedError, "Must specify :bundle_name")
     resources_directory = parameters[:resources_directory]
     application_signature = parameters[:application_signature] || '????'
     info_plist_file = parameters[:info_plist_file]
+    executable_name = parameters[:executable_name] ||
+        File.basename(bundle_name, '.app')
     
     build(:targets => [bundle_name,
                        bundle_name + '/Contents',
@@ -31,7 +66,9 @@ def build_bundle(parameters)
               :command => "cp '#{info_plist_file}' '#{bundle_name}/Contents/'",
               :message => "Copying Info.plist File #{bundle_name}/Contents/Info.plist")
     else
-        raise(BuildFailedError,
-              'Need to implement automatic Info.plist generation')
+        build(:targets => ["#{bundle_name}/Contents/Info.plist"],
+              :dependencies => ["#{bundle_name}/Contents"],
+              :command => "echo '#{info_plist_text(executable_name)}' > '#{bundle_name}/Contents/Info.plist'",
+              :message => "Creating Info.plist File #{bundle_name}/Contents/Info.plist")
     end
 end
