@@ -1,4 +1,8 @@
-CFLAGS = '-g -Os -Wall -W -Wno-unused-parameter -Wnewline-eof -Werror'
+if RUBY_PLATFORM =~ /darwin/ then
+    CFLAGS = '-g -Os -Wall -W -Wno-unused-parameter -Wnewline-eof -Werror'
+else
+    CFLAGS = '-g -Os -Wall -W -Wno-unused-parameter -Werror'
+end
 CC = 'gcc'
 CXX = 'g++'
 
