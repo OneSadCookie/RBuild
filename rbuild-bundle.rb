@@ -48,10 +48,15 @@ def build_bundle(parameters)
     
     if resources_directory != nil then
         Find.find(resources_directory) do |path|
-            source_path = path.sub(/^#{resources_directory}\//, '')
-            destination_path = "#{bundle_name}/Contents/Resources/#{source_path}"
-            
+            if File.basename(path) =~ /^\./ then
+                Find.prune
+            end
+        
             if FileTest.file?(path) then
+                source_path = path.sub(/^#{resources_directory}\//, '')
+                destination_path = "#{bundle_name}/Contents/Resources/#{source_path}"
+            
+            
                 build(:targets => [destination_path],
                       :dependencies => [path],
                       :command => "cp '#{path}' '#{destination_path}'",
