@@ -63,3 +63,15 @@ def build_link(parameters)
           :command => "#{CXX} -o '#{executable}' #{objects.collect do |object| "'#{object}'" end.join(' ')} #{library_search_paths.collect do |path| "'-L#{path}'" end.join(' ')} #{framework_search_paths.collect do |path| "'-F#{path}'" end.join(' ')} #{archives.join(' ')} #{libraries.collect do |library| "'-l#{library}'" end.join(' ')} #{frameworks.collect do |framework| "-framework '#{framework}'" end.join(' ')}",
           :message => "Linking #{executable}")
 end
+
+def build_archive(parameters)
+    archive = parameters[:archive] ||
+        raise(BuildFailedError, 'build_archive requires an archive name')
+    objects = parameters[:objects] || []
+    extra_dependencies = parameters[:extra_dependencies] || []
+    
+    build(:targets => [archive],
+          :dependencies => objects + extra_dependencies,
+          :command => "ar cru '#{archive}' #{objects.collect do |object| "'#{object}'" end.join(' ')}; ranlib '#{archive}'",
+          :message => "Creating Archive #{archive}")
+end
