@@ -55,7 +55,9 @@ class BuildTarget
                 return my_time
             end
         end
-            
+        
+        system("mkdir -p #{File.dirname(@path)}")
+        
         puts(@message)
         command_output = `#{@command}`
         if $? != 0 then
