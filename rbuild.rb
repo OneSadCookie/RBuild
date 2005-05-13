@@ -4,6 +4,16 @@ require 'fileutils'
 
 $: << File.dirname($0)
 
+def backtrace
+    begin
+        raise 'no error'
+    rescue => e
+        trace = e.backtrace
+        trace.shift
+        return trace
+    end
+end
+
 class BuildFailedError < Exception
 end
 
