@@ -1,10 +1,13 @@
 if RUBY_PLATFORM =~ /darwin/ then
+    CCSUFFIX = '-4.0'
     CFLAGS = '-g -Os -Wall -W -Wno-unused-parameter -Wnewline-eof -Werror'
+    ENV['MACOSX_DEPLOYMENT_TARGET'] = '10.3'
 else
+    CCSUFFIX = ''
     CFLAGS = '-g -Os -Wall -W -Wno-unused-parameter -Werror'
 end
-CC = '/usr/bin/gcc'
-CXX = '/usr/bin/g++'
+CC = "/usr/bin/gcc#{CCSUFFIX}"
+CXX = "/usr/bin/g++#{CCSUFFIX}"
 
 def which_compiler(source_file)
     extension = source_file.split(/\./)[-1]
@@ -80,3 +83,16 @@ def build_archive(parameters)
           :command => "ar cru '#{archive}' #{objects.collect do |object| "'#{object}'" end.join(' ')}; ranlib '#{archive}'",
           :message => "Creating Archive #{archive}")
 end
+
+def build_plugin(parameters)
+    plugin = parameters[:plugin] ||
+        raise(BuildFailedError, 'build_plugin requires a plugin name')
+    objects = parameters[:objects] || []
+    extra_dependencies = parameters[:extra_dependencies] || []
+    
+    build(:targets => [plugin],
+          :dependencies => objects + extra_dependencies,
+          :command => "#{CXX} -undefined dynamic_lookup -bundle -o '#{plugin}' #{objects.collect do |object| "'#{object}'" end.join(' ')}",
+          :message => "Creating Plug-In #{plugin}")
+end
+
