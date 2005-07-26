@@ -64,11 +64,12 @@ def build_executable(parameters)
     libraries = parameters[:libraries] || []
     framework_search_paths = parameters[:framework_search_paths] || []
     frameworks = parameters[:frameworks] || []
+    extra_linker_flags = parameters[:extra_linker_flags] || ''
     extra_dependencies = parameters[:extra_dependencies] || []
     
     build(:targets => [executable],
           :dependencies => objects + archives + extra_dependencies,
-          :command => "#{CXX} -o '#{executable}' #{objects.collect do |object| "'#{object}'" end.join(' ')} #{library_search_paths.collect do |path| "'-L#{path}'" end.join(' ')} #{framework_search_paths.collect do |path| "'-F#{path}'" end.join(' ')} #{archives.join(' ')} #{libraries.collect do |library| "'-l#{library}'" end.join(' ')} #{frameworks.collect do |framework| "-framework '#{framework}'" end.join(' ')}",
+          :command => "#{CXX} #{extra_linker_flags} -o '#{executable}' #{objects.collect do |object| "'#{object}'" end.join(' ')} #{library_search_paths.collect do |path| "'-L#{path}'" end.join(' ')} #{framework_search_paths.collect do |path| "'-F#{path}'" end.join(' ')} #{archives.join(' ')} #{libraries.collect do |library| "'-l#{library}'" end.join(' ')} #{frameworks.collect do |framework| "-framework '#{framework}'" end.join(' ')}",
           :message => "Linking #{executable}")
 end
 
@@ -90,9 +91,16 @@ def build_plugin(parameters)
     objects = parameters[:objects] || []
     extra_dependencies = parameters[:extra_dependencies] || []
     
-    build(:targets => [plugin],
+    if RUBY_PLATFORM =~ /darwin/ then
+        plugin_name = if plugin =~ /\.bundle$/ then plugin else "#{plugin}.bundle" end
+        command = "#{CXX} -undefined dynamic_lookup -bundle -o '#{plugin_name}' #{objects.collect do |object| "'#{object}'" end.join(' ')}"
+    else
+        plugin_name = if plugin =~ /\.so$/ then plugin else "#{plugin}.so" end
+        command = "#{CXX} -fPIC -shared -o '#{plugin_name}' #{objects.collect do |object| "'#{object}'" end.join(' ')}"
+    end
+    
+    build(:targets => [plugin_name],
           :dependencies => objects + extra_dependencies,
-          :command => "#{CXX} -undefined dynamic_lookup -bundle -o '#{plugin}' #{objects.collect do |object| "'#{object}'" end.join(' ')}",
+          :command => command,
           :message => "Creating Plug-In #{plugin}")
 end
-
