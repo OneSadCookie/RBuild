@@ -4,6 +4,8 @@ require 'fileutils'
 
 $: << File.dirname($0)
 
+$verbose = ARGV.include?('--verbose') || ARGV.include?('-v')
+
 def backtrace
     begin
         raise 'no error'
@@ -68,7 +70,7 @@ class BuildTarget
         
         system("mkdir -p '#{File.dirname(@path)}'")
         
-        puts(@message)
+        puts(if $verbose then @command else @message end)
         command_output = `#{@command}`
         if $? != 0 then
             puts(@command)
@@ -107,6 +109,10 @@ class AlwaysBuildTarget
     end
     
     def clean()
+    end
+    
+    def path()
+    	'<Always Build>'
     end
     
     def dump()
@@ -175,7 +181,7 @@ end
 build_environment.instance_eval(build_script_text,
                                 File.expand_path('build.rb'))
 
-#build_environment.dump
+build_environment.dump if $verbose
 
 begin
     if ARGV.include?('clean') then

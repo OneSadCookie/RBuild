@@ -19,7 +19,7 @@ def which_compiler(source_file)
 end
 
 def dependencies(source_file, compiler)
-    `#{compiler} -MM -P #{source_file}`.gsub(/\\/, '').split(' ')[1..-1] || []
+    `#{compiler} -MM -P #{source_file}`.gsub(/\\/, '').split(' ')[1..-1] || [source_file, ALWAYS_BUILD]
 end
 
 DEFAULT_SOURCE_TO_OBJECT_NAME = Proc.new do |source_file|
