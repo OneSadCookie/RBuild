@@ -181,7 +181,7 @@ end
 build_environment.instance_eval(build_script_text,
                                 File.expand_path('build.rb'))
 
-build_environment.dump if $verbose
+#build_environment.dump if $verbose
 
 begin
     if ARGV.include?('clean') then
