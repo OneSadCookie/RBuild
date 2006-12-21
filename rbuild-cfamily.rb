@@ -6,8 +6,8 @@ else
     CCSUFFIX = ''
     CFLAGS = '-g -Os -Wall -W -Wno-unused-parameter -Werror'
 end
-CC = "/usr/bin/gcc#{CCSUFFIX}"
-CXX = "/usr/bin/g++#{CCSUFFIX}"
+CC = "gcc#{CCSUFFIX}"
+CXX = "g++#{CCSUFFIX}"
 
 def which_compiler(source_file)
     extension = source_file.split(/\./)[-1]
