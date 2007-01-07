@@ -71,7 +71,7 @@ class BuildTarget
         FileUtils::mkdir_p(File.dirname(@path))
         
         puts(if $verbose then @command else @message end)
-        command_output = `#{@command}`
+        command_output = _run(@command)
         if $? != 0 then
             puts(@command)
             puts(command_output)
@@ -91,6 +91,21 @@ class BuildTarget
     
     def dump()
         puts "#{@path} : #{@command} ( #{@dependencies.keys.collect { |dependency| dependency.path }.join(',')} )"
+    end
+    
+    if RUBY_PLATFORM =~ /mswin32/ then
+        def _escape(command)
+            command.gsub(/"/, '\"')
+        end
+        
+        def _run(command)
+            # how to find out where MSYS is?
+            `c:\\Devel\\MSYS\\1.0\\bin\\sh.exe -c "#{_escape(@command)}"`
+        end
+    else
+        def _run(command)
+            `#{@command}`
+        end
     end
     
     attr_reader :path
