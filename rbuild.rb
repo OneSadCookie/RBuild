@@ -68,7 +68,7 @@ class BuildTarget
             end
         end
         
-        system("mkdir -p '#{File.dirname(@path)}'")
+        FileUtils::mkdir_p(File.dirname(@path))
         
         puts(if $verbose then @command else @message end)
         command_output = `#{@command}`
